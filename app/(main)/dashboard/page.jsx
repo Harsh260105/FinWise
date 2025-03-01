@@ -8,6 +8,7 @@ import { BudgetProgress } from "./_components/budget-progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DashboardOverview } from "./_components/transaction-overview";
+import ChatboxWidget from "./_components/ChatboxWidget";  // Import AI Chatbox
 
 export default async function DashboardPage() {
   const [accounts, transactions] = await Promise.all([
@@ -24,7 +25,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
       {/* Budget Progress */}
       <BudgetProgress
         initialBudget={budgetData?.budget}
@@ -32,10 +33,7 @@ export default async function DashboardPage() {
       />
 
       {/* Dashboard Overview */}
-      <DashboardOverview
-        accounts={accounts}
-        transactions={transactions || []}
-      />
+      <DashboardOverview accounts={accounts} transactions={transactions || []} />
 
       {/* Accounts Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -52,6 +50,9 @@ export default async function DashboardPage() {
             <AccountCard key={account.id} account={account} />
           ))}
       </div>
+
+      {/* AI Chatbox */}
+      <ChatboxWidget />
     </div>
   );
 }
