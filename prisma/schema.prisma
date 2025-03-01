@@ -78,6 +78,21 @@ model Budget {
   @@map("budgets")
 }
 
+model LearningResource {
+  id          String       @id @default(uuid())
+  title       String
+  description String       @db.Text
+  type        ResourceType
+  category    String
+  content     String?      @db.Text    // For articles: full content
+  youtubeUrl  String?                  // For videos: YouTube video URL
+  readTime    String?                  // For articles: estimated read time
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@map("learning_resources")
+}
+
 enum TransactionType {
   INCOME
   EXPENSE
@@ -99,4 +114,9 @@ enum RecurringInterval {
   WEEKLY
   MONTHLY
   YEARLY
+}
+
+enum ResourceType {
+  ARTICLE
+  VIDEO
 }

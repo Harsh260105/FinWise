@@ -10,6 +10,9 @@
     "email": "email dev",
     "postinstall": "prisma generate"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "dependencies": {
     "@arcjet/next": "^1.0.0-alpha.34",
     "@clerk/nextjs": "^6.6.0",
@@ -24,6 +27,7 @@
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@radix-ui/react-switch": "^1.1.1",
+    "@radix-ui/react-tabs": "^1.1.3",
     "@radix-ui/react-tooltip": "^1.1.4",
     "@react-email/components": "^0.0.30",
     "class-variance-authority": "^0.7.1",
@@ -40,8 +44,8 @@
     "react-spinners": "^0.14.1",
     "recharts": "^2.14.1",
     "resend": "^4.1.2",
-    "sonner": "^1.7.0",
-    "tailwind-merge": "^2.5.5",
+    "sonner": "^1.7.4",
+    "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^1.1.1",
     "zod": "^3.23.8"
