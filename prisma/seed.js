@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+
 const prisma = new PrismaClient();
 
 async function main() {
@@ -68,7 +69,33 @@ async function main() {
         data: [...articles, ...videos]
     });
 
-    console.log('Seed data created successfully');
+    // Create test subscription plan
+    const plan = {
+        name: 'Premium',
+        description: 'Full access to all features',
+        price: 1, // 1 rupee for testing
+        duration: 1, // 1 month
+        features: [
+            'Unlimited expense tracking',
+            'Unlimited accounts',
+            'Real-time budget alerts',
+            'Advanced financial insights',
+            'Recurring transactions',
+            'Receipt management',
+            'Priority support',
+            'Advanced analytics',
+            'Wealth management tools'
+        ],
+        isActive: true
+    };
+
+    await prisma.subscriptionPlan.upsert({
+        where: { name: plan.name },
+        update: plan,
+        create: plan
+    });
+
+    console.log('Test subscription plan created successfully');
 }
 
 main()
