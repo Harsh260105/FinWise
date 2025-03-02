@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)  # Allow frontend requests
 
 # Initialize Cohere API (Replace 'your-api-key' with your actual key)
-COHERE_API_KEY = "qfhMIPqUCPJCXmCmmCn9U2kG9Vc3vgrXH0P8rmtX"
+COHERE_API_KEY = "nclWnXRK8jxmdqckdJk7zAe58XSRhmypAp1qnkHl"
 co = cohere.Client(COHERE_API_KEY)
 
 @app.route('/get_advice', methods=['POST'])
@@ -22,7 +22,7 @@ def get_advice():
         response = co.generate(
             model="command",
             prompt=query,
-            max_tokens=300  # Adjust response length as needed
+            max_tokens=50  # Adjust response length as needed
         )
 
         # Extract the AI response

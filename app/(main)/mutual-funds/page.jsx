@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,189 +10,190 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, TrendingUp, ArrowUpRight, Info } from "lucide-react";
-import {
-  fetchMutualFunds,
-  searchMutualFunds,
-  getMutualFundDetails,
-  getFundCategories,
-} from "@/actions/mutual-funds";
+import { Search, Loader2 } from "lucide-react";
 import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
+import InvestRecommend from "./invest-recommend";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import MutualFundCard from "./_components/MutualFundCard";
+import { fetchIndianMutualFunds } from "@/services/alphaVantageService";
 
-function MutualFundCard({ fund }) {
-  const [showDetails, setShowDetails] = useState(false);
-  const [details, setDetails] = useState(null);
+const CATEGORIES = [
+  "All",
+  "Equity",
+  "Debt",
+  "Hybrid",
+  "Index",
+  "Tax Saving",
+  "Liquid"
+];
 
-  const loadDetails = async () => {
-    try {
-      const data = await getMutualFundDetails(fund.schemeCode);
-      setDetails(data);
-    } catch (error) {
-      toast.error("Failed to load fund details");
-    }
-  };
-
-  useEffect(() => {
-    if (showDetails && !details) {
-      loadDetails();
-    }
-  }, [showDetails]);
-
-  return (
-    <Card className="hover:shadow-lg transition-shadow">
-      <CardHeader>
-        <div className="flex justify-between items-start gap-4">
-          <CardTitle className="text-xl">{fund.schemeName}</CardTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setShowDetails(!showDetails)}
-          >
-            <Info className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className="text-sm text-muted-foreground">{fund.fundHouse}</div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid gap-4">
-          <div className="flex justify-between items-center">
-            <span className="text-sm">Category</span>
-            <span className="font-medium">{fund.schemeCategory}</span>
-          </div>
-          <div className="flex justify-between items-center">
-            <span className="text-sm">NAV</span>
-            <span className="font-medium">₹{fund.nav}</span>
-          </div>
-          {fund.returns && (
-            <div className="flex justify-between items-center">
-              <span className="text-sm">1Y Returns</span>
-              <div className="flex items-center gap-1">
-                <TrendingUp className="h-4 w-4 text-green-500" />
-                <span className="font-medium text-green-600">
-                  {fund.returns}%
-                </span>
-              </div>
-            </div>
-          )}
-          {showDetails && details && (
-            <div className="mt-4 space-y-2 border-t pt-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Min Investment</span>
-                <span>₹{details.minInvestment}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Expense Ratio</span>
-                <span>{details.expenseRatio}%</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm">Fund Size</span>
-                <span>₹{details.aum} Cr</span>
-              </div>
-              <Button className="w-full mt-4" asChild>
-                <a
-                  href={details.investmentLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Invest Now <ArrowUpRight className="ml-2 h-4 w-4" />
-                </a>
-              </Button>
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+const POPULAR_SEARCHES = [
+  "HDFC",
+  "SBI",
+  "Axis",
+  "ICICI",
+  "Tata"
+];
 
 export default function MutualFundsPage() {
+  const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("All");
   const [funds, setFunds] = useState([]);
-  const [categories, setCategories] = useState([]);
+  const [filteredFunds, setFilteredFunds] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const debouncedSearch = useDebounce(searchQuery, 500);
 
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const fundCategories = await getFundCategories();
-        setCategories(fundCategories);
-      } catch (error) {
-        console.error("Error loading categories:", error);
-        toast.error("Failed to load fund categories");
-      }
-    };
-    loadCategories();
+    setMounted(true);
   }, []);
 
-  useEffect(() => {
-    const loadFunds = async () => {
-      try {
-        setIsLoading(true);
-        if (debouncedSearch) {
-          const searchResults = await searchMutualFunds(debouncedSearch);
-          setFunds(searchResults);
-        } else {
-          const allFunds = await fetchMutualFunds(selectedCategory);
-          setFunds(allFunds);
-        }
-      } catch (error) {
-        console.error("Error loading funds:", error);
-        toast.error("Failed to load mutual funds");
-      } finally {
-        setIsLoading(false);
+  const loadFunds = async () => {
+    if (!mounted) return;
+    
+    try {
+      setIsLoading(true);
+      setError(null);
+      const data = await fetchIndianMutualFunds();
+      setFunds(data);
+      setFilteredFunds(data);
+      if (data.length === 0) {
+        toast.info("No mutual funds data available at the moment. Please try again later.");
       }
-    };
+    } catch (error) {
+      console.error("Error loading funds:", error);
+      setError("Failed to load mutual funds. Please try again later.");
+      toast.error("Failed to load mutual funds");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // Fetch mutual funds data
+  useEffect(() => {
     loadFunds();
-  }, [debouncedSearch, selectedCategory]);
+  }, [mounted]);
+
+  // Filter funds based on search and category
+  useEffect(() => {
+    if (!mounted) return;
+    
+    let filtered = [...funds];
+
+    // Apply category filter
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter(fund => 
+        fund.category.toLowerCase().includes(selectedCategory.toLowerCase())
+      );
+    }
+
+    // Apply search filter
+    if (debouncedSearch) {
+      const searchLower = debouncedSearch.toLowerCase();
+      filtered = filtered.filter(fund =>
+        fund.name.toLowerCase().includes(searchLower) ||
+        fund.fundHouse.toLowerCase().includes(searchLower)
+      );
+    }
+
+    setFilteredFunds(filtered);
+  }, [debouncedSearch, selectedCategory, funds, mounted]);
+
+  const handlePopularSearch = (term) => {
+    setSearchQuery(term);
+  };
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search mutual funds..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full md:w-[180px]">
-            <SelectValue placeholder="Select Category" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category} value={category.toLowerCase()}>
-                {category}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+      <Tabs defaultValue="funds" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="funds">Mutual Funds</TabsTrigger>
+          <TabsTrigger value="recommend">Get Recommendations</TabsTrigger>
+        </TabsList>
 
-      {isLoading ? (
-        <div className="text-center py-8">
-          <span className="text-muted-foreground">Loading mutual funds...</span>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {funds.map((fund) => (
-            <MutualFundCard key={fund.schemeCode} fund={fund} />
-          ))}
-          {funds.length === 0 && (
-            <p className="text-center text-muted-foreground py-8 md:col-span-2">
-              No mutual funds found
-            </p>
+        <TabsContent value="funds" className="space-y-6">
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search mutual funds..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <SelectTrigger className="w-full md:w-[180px]">
+                  <SelectValue placeholder="Select Category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <span className="text-sm text-muted-foreground">Popular searches:</span>
+              {POPULAR_SEARCHES.map((term) => (
+                <Button
+                  key={term}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePopularSearch(term)}
+                >
+                  {term}
+                </Button>
+              ))}
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="text-center py-8 space-y-2">
+              <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+              <span className="text-muted-foreground block">Loading mutual funds...</span>
+            </div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-500">
+              {error}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadFunds}
+                className="ml-2"
+              >
+                Try Again
+              </Button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredFunds.map((fund) => (
+                <MutualFundCard key={fund.symbol} fund={fund} />
+              ))}
+              {filteredFunds.length === 0 && (
+                <p className="text-center text-muted-foreground py-8 md:col-span-2">
+                  No mutual funds found matching your search criteria
+                </p>
+              )}
+            </div>
           )}
-        </div>
-      )}
+        </TabsContent>
+
+        <TabsContent value="recommend">
+          <InvestRecommend />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
