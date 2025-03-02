@@ -3,6 +3,7 @@ from flask_cors import CORS
 import cohere
 import json
 import os
+
 from datetime import datetime
 
 # Initialize Flask app
@@ -10,11 +11,13 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend communication
 
 # Set up Cohere API key
+
 COHERE_API_KEY = "qfhMIPqUCPJCXmCmmCn9U2kG9Vc3vgrXH0P8rmtX"
 co = cohere.Client(COHERE_API_KEY)
 
 # File to store user investment history
 HISTORY_FILE = "investment_history.json"
+
 
 # Load previous user history
 def load_user_history():
@@ -63,9 +66,11 @@ def get_ai_recommendation(user_input):
         print(f"Cohere API Error: {e}")
         return "Error generating recommendation. Please try again."
 
+
 # API Endpoint: Get Investment Recommendation
 @app.route('/predict_investment', methods=['POST'])
 def predict_investment():
+
     try:
         data = request.json
         print("Received data:", data)  # Debug log
@@ -106,6 +111,7 @@ def predict_investment():
             "message": str(e)
         }), 500
 
+
 # API Endpoint: Retrieve Past Recommendations
 @app.route('/get_history', methods=['GET'])
 def get_history():
@@ -124,5 +130,6 @@ def get_history():
 # Run Flask server
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
+
 
 
