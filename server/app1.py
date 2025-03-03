@@ -129,14 +129,7 @@ def get_history():
 
 # Run Flask server
 if __name__ == '__main__':
-<<<<<<< HEAD
     app.run(debug=True, port=5001)
 
 
 
-=======
-    app.run(debug=True, port=5000)
-
-
-
->>>>>>> 52cc85a8c0ddd5dc49d18fb18ee4f09d8517490f
