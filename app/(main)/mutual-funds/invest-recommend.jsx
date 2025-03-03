@@ -32,7 +32,11 @@ export default function InvestRecommend() {
         e.preventDefault();
         setLoading(true);
         try {
+<<<<<<< HEAD
             const response = await fetch('http://localhost:5001/predict_investment', {
+=======
+            const response = await fetch('http://localhost:5000/predict_investment', {
+>>>>>>> 52cc85a8c0ddd5dc49d18fb18ee4f09d8517490f
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)

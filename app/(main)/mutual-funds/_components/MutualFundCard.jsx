@@ -160,4 +160,8 @@ export default function MutualFundCard({ fund }) {
             </CardContent>
         </Card>
     );
+<<<<<<< HEAD
 }
+=======
+} 
+>>>>>>> 52cc85a8c0ddd5dc49d18fb18ee4f09d8517490f
