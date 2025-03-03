@@ -17,10 +17,12 @@ model User {
   transactions  Transaction[]
   accounts      Account[]
   budgets       Budget[]
-  subscriptions Subscription[]
+  subscription  Subscription?  @relation("UserSubscription")
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   isSubscribed  Boolean        @default(false)
+  emailVerified DateTime?
+  image         String?
 
   @@map("users")
 }
@@ -95,16 +97,19 @@ model LearningResource {
 }
 
 model Subscription {
-  id            String    @id @default(cuid())
-  userId        String
-  user          User      @relation(fields: [userId], references: [id])
-  status        String    // 'active', 'cancelled', 'expired'
-  startDate     DateTime  @default(now())
-  endDate       DateTime?
-  paymentId     String?   // Razorpay payment ID
-  orderId       String?   // Razorpay order ID
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation("UserSubscription", fields: [userId], references: [id])
+  status          String    @default("active") // active, cancelled, expired
+  planType        String    @default("premium")
+  startDate       DateTime  @default(now())
+  endDate         DateTime
+  paymentId       String?   
+  razorpayOrderId String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([userId])
 }
 
 enum TransactionType {

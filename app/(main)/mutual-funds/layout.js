@@ -9,14 +9,21 @@ export default function Layout() {
         <div className="px-5">
             <div className="flex items-center justify-between mb-5">
                 <h1 className="text-6xl font-bold tracking-tight gradient-title">
-                    Mutual Funds
+                    Investment Hub
                 </h1>
+                <p className="text-muted-foreground">
+                    Explore funds and get personalized recommendations
+                </p>
             </div>
             <Suspense
-                fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea" />}
+                fallback={
+                    <div className="flex items-center justify-center min-h-[400px]">
+                        <BarLoader color="#9333ea" />
+                    </div>
+                }
             >
                 <MutualFundsPage />
             </Suspense>
         </div>
     );
-} 
+}
