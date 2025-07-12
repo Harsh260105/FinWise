@@ -1,4 +1,4 @@
-# 💰 Budget Management App
+# 💰 Financial Wellness App
 
 ## 🚀 Transform Your Financial Life with Ease!
 
