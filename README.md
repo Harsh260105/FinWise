@@ -2,7 +2,7 @@
 
 ## 🚀 Transform Your Financial Life with Ease!
 
-Our **Budget Management App** is more than just an expense tracker—it's a complete financial ecosystem! We combine **budget management, expense tracking, and financial learning** into a single powerful platform. Whether you're planning your budget, tracking expenses, learning financial strategies, or making smart investments, we provide the tools and insights you need to achieve financial freedom!
+Our **FinWise** is more than just an expense tracker—it's a complete financial ecosystem! We combine **budget management, expense tracking, and financial learning** into a single powerful platform. Whether you're planning your budget, tracking expenses, learning financial strategies, or making smart investments, we provide the tools and insights you need to achieve financial freedom!
 
 ---
 ## video link : https://drive.google.com/file/d/1K8e8FkjqCkONnGTB0F2l0ldRY_Nk9vz8/view?usp=sharing
